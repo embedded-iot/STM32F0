@@ -1,163 +1,127 @@
-/**
-  ******************************************************************************
-  * @file    GPIO/GPIO_IOToggle/main.c 
-  * @author  MCD Application Team
-  * @version V1.4.0
-  * @date    24-July-2014
-  * @brief   Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */
+
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/** @addtogroup STM32F0xx_StdPeriph_Examples
-  * @{
-  */
-
-/** @addtogroup GPIO_IOToggle
-  * @{
-  */
-
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define BSRR_VAL 0x0C00
-
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-GPIO_InitTypeDef        GPIO_InitStructure;
+
+uint32_t Adc_Value=0, Adc_Value_Old=0;
+int i;
+unsigned char value=0;
+unsigned char setup;
+float Duty=0.0, Duty_old=6.0; 
+int a;
 
 /* Private function prototypes -----------------------------------------------*/
+void GPIO_config(void);
+
 /* Private functions ---------------------------------------------------------*/
 
-/**
-  * @brief  Main program.
-  * @param  None
-  * @retval None
-  */
+
 int main(void)
-{
-  /*!< At this stage the microcontroller clock setting is already configured, 
-       this is done through SystemInit() function which is called from startup
-       file (startup_stm32f0xx.s) before to branch to application main.
-       To reconfigure the default setting of SystemInit() function, refer to
-       system_stm32f0xx.c file
-     */
-
-  /* GPIOC Periph clock enable */
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOC, ENABLE);
-
-  /* Configure PC10 and PC11 in output pushpull mode */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-  /* To achieve GPIO toggling maximum frequency, the following  sequence is mandatory. 
-     You can monitor PC10 and PC11 on the scope to measure the output signal. 
-     If you need to fine tune this frequency, you can add more GPIO set/reset 
-     cycles to minimize more the infinite loop timing.
-     This code needs to be compiled with high speed optimization option.  */
-  while (1)
-  {
-    /* Set PC10 and PC11 */
-    GPIOC->BSRR = BSRR_VAL;
-    /* Reset PC10 and PC11 */
-    GPIOC->BRR = BSRR_VAL;
-
-    /* Set PC10 and PC11 */
-    GPIOC->BSRR = BSRR_VAL;
-    /* Reset PC10 and PC11 */
-    GPIOC->BRR = BSRR_VAL;
-
-    /* Set PC10 and PC11 */
-    GPIOC->BSRR = BSRR_VAL;
-    /* Reset PC10 and PC11 */
-    GPIOC->BRR = BSRR_VAL;
-
-    /* Set PC10 and PC11 */
-    GPIOC->BSRR = BSRR_VAL;
-    /* Reset PC10 and PC11 */
-    GPIOC->BRR = BSRR_VAL;
-
-    /* Set PC10 and PC11 */
-    GPIOC->BSRR = BSRR_VAL;
-    /* Reset PC10 and PC11 */
-    GPIOC->BRR = BSRR_VAL;
-
-    /* Set PC10 and PC11 */
-    GPIOC->BSRR = BSRR_VAL;
-    /* Reset PC10 and PC11 */
-    GPIOC->BRR = BSRR_VAL;
-
-    /* Set PC10 and PC11 */
-    GPIOC->BSRR = BSRR_VAL;
-    /* Reset PC10 and PC11 */
-    GPIOC->BRR = BSRR_VAL;
-
-    /* Set PC10 and PC11 */
-    GPIOC->BSRR = BSRR_VAL;
-    /* Reset PC10 and PC11 */
-    GPIOC->BRR = BSRR_VAL;
-
-    /* Set PC10 and PC11 */
-    GPIOC->BSRR = BSRR_VAL;
-    /* Reset PC10 and PC11 */
-    GPIOC->BRR = BSRR_VAL;
-
-    /* Set PC10 and PC11 */
-    GPIOC->BSRR = BSRR_VAL;
-    /* Reset PC10 and PC11 */
-    GPIOC->BRR = BSRR_VAL;
-  }
+{   
+	  SystemInit();
+	  RCC_use_ext_crystal();
+    delay_init(48);
+    TIM_PWM_Configuration(); 
+	  GPIO_Configuration();
+	  Adc_init();   
+	  //initIWDG(3,0xfff);
+	  Setup_Config();
+	
+    TIM3->CCR1 = 6.0 * 411 / 100;     /* 20% Duty cycle */
+   //TIM3->CCR3 = 90 * 65535 / 100;    /* 90% Duty cycle */
+	 //write_data_flash( Address1, 6789);
+	 //write_data_flash( Address2, 0000);
+	
+    while (1)
+      {  
+//         if((GPIO_ReadInputDataBit(GPIOB, Mode)) == RESET)  
+//					 {
+//    				  Adc_Value = Read_adc();
+//						  delay_ms(7);
+//              quet_phim();
+//              if(setup==0) 
+//							 {
+//								 for(i=0;i<50;i++)
+//							      { 
+//								       dec4(Adc_Value/1000,(Adc_Value%1000)/100,(Adc_Value%100)/10,Adc_Value%10);
+//											//IWDG_Feed();
+//									  }
+//							 }
+//						  if(setup==1) setup1();
+//						  if(setup==2) setup2();
+//						}
+//					 else  dec4(4,5,6,7);
+				   
+				
+			
+				Adc_Value = 0;
+        for(i=0;i<10;i++)
+				{  				
+				    Adc_Value = Adc_Value + Read_adc();
+				    delay_ms(200);
+				}
+				Adc_Value = Adc_Value/10;
+				
+				if(Adc_Value>3000) TIM3->CCR1 = 0;
+				else
+				{   
+				    Duty = 12-(Adc_Value * 12 / 4096);
+					  a=Duty*10;
+					  Duty=(float)a/10.0;
+					  while(Duty > Duty_old)
+						{
+			        Duty_old = Duty_old + 0.01; 
+							TIM3->CCR1 = Duty_old*411 / 100; 
+							 delay_ms(1000);
+							 //delay_ms(1000);
+						}
+            while(Duty < Duty_old)
+						{  
+							 Duty_old = Duty_old - 0.1;
+			         TIM3->CCR1 = Duty_old*411 / 100; 
+							 //delay_ms(1000);
+							 delay_ms(1000);
+						}		
+            Duty_old = Duty;						
+			}
+	
+//	Duty=6.0;
+//	for(i=0;i<50;i++)
+//	{
+//	    Duty=Duty+0.1;
+//		  TIM3->CCR1 = Duty*411 / 100;
+//		  delay_ms(7);
+//		delay_ms(1000);
+//		delay_ms(1000);
+//		delay_ms(1000);
+//	}
+//	
+//	TIM3->CCR1 = 0;
+//	
+//	//		delay_ms(1000);
+//		delay_ms(1000);
+//		delay_ms(1000);
+//	//		delay_ms(1000);
+//		delay_ms(1000);
+//		delay_ms(1000);
+	
+      }
 }
+
 
 #ifdef  USE_FULL_ASSERT
 
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
 void assert_failed(uint8_t* file, uint32_t line)
-{
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+{ 
 
-  /* Infinite loop */
   while (1)
   {
   }
 }
 #endif
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

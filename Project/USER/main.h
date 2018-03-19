@@ -1,9 +1,9 @@
 /**
   ******************************************************************************
-  * @file    GPIO/GPIO_IOToggle/main.h 
+  * @file    Project/STM32F0xx_StdPeriph_Templates/main.h 
   * @author  MCD Application Team
-  * @version V1.4.0
-  * @date    24-July-2014
+  * @version V1.5.0
+  * @date    05-December-2014
   * @brief   Header for main.c module
   ******************************************************************************
   * @attention
@@ -31,9 +31,35 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx.h"
+//#include "stm32f0xx_rcc.h"
+//#include "stm32f0xx_gpio.h"
+//#include "stm32f0xx_adc.h"
+//#include "stm32f0xx_tim.h"
 
-#include <stm32f0xx_rcc.h>            // thu vien cau hinh xung clock
-#include <stm32f0xx_gpio.h>            // thu vien cau hinh gpio
+#include "user_delay.h"
+#include "rcc_config.h"
+#include "Tim3_Pwm.h"
+#include "Led7.h"
+#include "adc_sensor_as.h"
+#include "setup.h"
+
+#include "stdint.h"
+#include <stdarg.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+
+//#ifdef USE_STM320518_EVAL
+// #include "stm320518_eval.h"
+// #include "stm320518_eval_lcd.h"
+//#endif /* USE_STM320518_EVAL */
+
+//#ifdef USE_STM32072B_EVAL
+// #include "stm32072b_eval.h"
+// #include "stm32072b_eval_lcd.h"
+//#endif /* USE_STM32072B_EVAL */
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
